@@ -22,14 +22,14 @@ class LogisticRegression:
 
     def fit(self, x, y):
         size = x.shape[1]
-        xx = x.assign(w0=np.ones(x.shape[0]))
-        self.w = pd.Series(data=np.random.randn(size + 1), name="w")
+        #xx = x.assign(w0=np.ones(x.shape[0]))
+        self.w = pd.Series(data=np.random.randn(size), name="w")
 
         for step in range(10000):
-            wy = np.multiply(np.power(np.exp(np.multiply(np.matmul(xx, self.w), y) * (-1)) + 1, -1) * (-1) + 1, y)
+            wy = np.multiply(np.power(np.exp(np.multiply(np.matmul(x , self.w), y) * (-1)) + 1, -1) * (-1) + 1, y)
             wy = pd.DataFrame(wy)
             wy = pd.concat([wy * size], axis=1)
-            wy = np.multiply(xx, wy)
+            wy = np.multiply(x, wy)
             wy = self.k * wy.mean()
             wnext = pd.DataFrame()
             wnext["w"] = self.w
@@ -45,16 +45,12 @@ class LogisticRegression:
         print("Gradient takes %d steps" % step)
 
     def predict(self, x):
-        ones = np.ones(x.shape[0]).reshape(x.shape[0], 1)
-        xx = np.concatenate((x, ones), axis=1)
-        p = np.matmul(xx , self.w)
+        p = np.matmul(x , self.w)
         p = np.piecewise(p, [p < 0, p >= 0], [0, 1])
         return p.astype(int)
     
     def getROC(self, x, y):
-        ones = np.ones(x.shape[0]).reshape(x.shape[0], 1)
-        xx = np.concatenate((x, ones), axis=1)
-        p = np.power(np.exp(np.matmul(xx , self.w) * (-1)) + 1, -1)
+        p = np.power(np.exp(np.matmul(x , self.w) * (-1)) + 1, -1)
         return roc_auc_score(y, p)
 
     def setParam(self, k=None, C=None):
@@ -77,7 +73,7 @@ test_data_scaled = scaler.transform(test_data)
 print("train size:", train_data_scaled.shape)
 print("test size:", test_data_scaled.shape)
 
-clf = LogisticRegression(k=0.001, C=5)
+clf = LogisticRegression(k=0.0001, C=10)
 clf.fit(train_data_scaled, targets)
 roc = clf.getROC(train_data_scaled, targets)
 
