@@ -6,7 +6,6 @@ Created on Sun May 20 11:52:17 2018
 @author: andribas
 """
 
-
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
@@ -59,7 +58,6 @@ class LogisticRegression:
             self.k = k
         if C is not None:
             self.C = C
-
 
 
 train_data = pd.read_csv("train.csv", header=None)
